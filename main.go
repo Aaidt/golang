@@ -2,16 +2,21 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 )
 
+type rect struct {
+	width  int32
+	height int32
+}
+
+func (r *rect) area() int32 {
+	r.height = 30
+	return r.width * r.height
+}
+
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "You have requested: %s/n", r.URL.Path)
-	})
+	r := rect{10, 20}
 
-	fs := http.FileServer(http.Dir("static/"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	http.ListenAndServe(":80", nil)
+	fmt.Println(r.area())
+	fmt.Println(r)
 }

@@ -1,7 +1,5 @@
 package main
 
-import "time"
-
 func main() {
 	// ch := make(chan int)
 	//
@@ -15,12 +13,15 @@ func main() {
 	ch := make(chan int, 5)
 
 	go func() {
+		defer close(ch)
 		for i := range 10 {
 			ch <- i
 		}
 	}()
 
-	time.Sleep(time.Second * 5)
+	val, ok := <-ch
+	println(val, ok)
+
 	for v := range ch {
 		println(v)
 	}

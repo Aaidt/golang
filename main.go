@@ -1,18 +1,27 @@
 package main
 
-func expensiveoperation(ch chan<- bool) {
+import "sync"
+
+func expensiveoperation() {
 	sum := 0
-	for i := range 100000000000 {
+	for i := range 100000 {
 		sum += i
 	}
 	println(sum)
-	ch <- true
 }
 
 func main() {
-	ch := make(chan bool)
+	var w sync.WaitGroup
 
-	go expensiveoperation(ch)
-	<-ch
+	for i := 0; i < 5; i++ {
+		w.Add(1)
+
+		go func() {
+			defer w.Done()
+			expensiveoperation()
+		}()
+
+	}
+	w.Wait()
 	println("Main function ended.")
 }

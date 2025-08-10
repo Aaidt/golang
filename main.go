@@ -1,21 +1,27 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
-func expensiveOp(str string) {
-	for i := range 30 {
-		fmt.Println(str, "-", i)
-	}
-}
+import "time"
 
 func main() {
-	go expensiveOp("wassup")
-	go expensiveOp("aadit-HP-Laptop-14s-cs3xxx")
-	go expensiveOp("aadit")
+	// ch := make(chan int)
+	//
+	// go func() {
+	// 	ch <- 5
+	// }()
+	//
+	// value := <-ch
+	// println(value)
 
-	time.Sleep(time.Second * 2)
-	fmt.Println("Done")
+	ch := make(chan int, 5)
+
+	go func() {
+		for i := range 10 {
+			ch <- i
+		}
+	}()
+
+	time.Sleep(time.Second * 5)
+	for v := range ch {
+		println(v)
+	}
 }

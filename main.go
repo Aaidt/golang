@@ -2,26 +2,32 @@ package main
 
 import "sync"
 
-func expensiveoperation() {
-	sum := 0
-	for i := range 100000 {
-		sum += i
-	}
-	println(sum)
+type safeCounter struct {
+	m     sync.Mutex
+	value int
 }
 
 func main() {
 	var w sync.WaitGroup
 
-	for i := 0; i < 5; i++ {
+	s := safeCounter{
+		m:     sync.Mutex{},
+		value: 0,
+	}
+
+	for i := range 100000 {
 		w.Add(1)
 
 		go func() {
 			defer w.Done()
-			expensiveoperation()
+			defer s.m.Unlock()
+			s.m.Lock()
+			s.value += i
 		}()
-
 	}
+
 	w.Wait()
+	println(s.value)
+
 	println("Main function ended.")
 }

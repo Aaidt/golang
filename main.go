@@ -1,33 +1,24 @@
 package main
 
-import "sync"
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+)
 
-type safeCounter struct {
-	m     sync.Mutex
-	value int
+type Person struct {
+	Name  string `json:"name"`
+	Age   int    `json:"age"`
+	Email string `json:"email,omitempty"`
 }
 
 func main() {
-	var w sync.WaitGroup
+	person := Person{Name: "Aadit", Age: 34, Email: ""}
 
-	s := safeCounter{
-		m:     sync.Mutex{},
-		value: 0,
+	jsonData, err := json.Marshal(person)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	for i := range 100000 {
-		w.Add(1)
-
-		go func() {
-			defer w.Done()
-			defer s.m.Unlock()
-			s.m.Lock()
-			s.value += i
-		}()
-	}
-
-	w.Wait()
-	println(s.value)
-
-	println("Main function ended.")
+	fmt.Println(string(jsonData))
 }

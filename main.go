@@ -2,21 +2,20 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
-type rect struct {
-	width  int32
-	height int32
-}
-
-func (r *rect) area() int32 {
-	r.height = 30
-	return r.width * r.height
+func expensiveOp(str string) {
+	for i := range 30 {
+		fmt.Println(str, "-", i)
+	}
 }
 
 func main() {
-	r := rect{10, 20}
+	go expensiveOp("wassup")
+	go expensiveOp("aadit-HP-Laptop-14s-cs3xxx")
+	go expensiveOp("aadit")
 
-	fmt.Println(r.area())
-	fmt.Println(r)
+	time.Sleep(time.Second * 2)
+	fmt.Println("Done")
 }

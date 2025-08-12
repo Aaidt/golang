@@ -18,6 +18,7 @@ func SendRequest(url string, ch chan string) {
 	resp, err := http.Get(url)
 	if err != nil {
 		ch <- "Error while sending request"
+		return
 	}
 
 	defer resp.Body.Close()
@@ -25,6 +26,7 @@ func SendRequest(url string, ch chan string) {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		ch <- "Error while reading body"
+		return
 	}
 
 	p := post{}
@@ -36,7 +38,20 @@ func SendRequest(url string, ch chan string) {
 
 func main() {
 	ch := make(chan string)
-	go SendRequest("https://jsonplaceholder.typicode.com/posts/1", ch)
+	urls := [3]string{"https://jsonplaceholder.typicode.com/posts/1", "https://jsonplaceholder.typicode.com/posts/2", "https://jsonplaceholder.typicode.com/posts/3"}
+
+	for _, url := range urls {
+		go SendRequest(url, ch)
+	}
+
+	for range urls {
+		select {
+		case res := <-ch:
+			{
+				fmt.Println(res)
+			}
+		}
+	}
 
 	ans := <-ch
 
